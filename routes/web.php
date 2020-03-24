@@ -13,6 +13,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+
+
+Route::group(['middleware' =>['web']], function (){
+    Route::post('/signup',[
+        'uses' => 'AdminController@postSignUp',
+        'as' => 'signup'
+    ]);
 });
+
+
