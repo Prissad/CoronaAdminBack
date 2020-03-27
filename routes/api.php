@@ -19,6 +19,7 @@ Route::post('/signup', 'AdminController@signUp');
 Route::post('login', 'AdminController@login');
 */
 Route::get('/hello','PostsController@index');
+Route::post('/rep','PostsController@store');
 
 Route::get('/posts', 'PostsController@show2');
 Route::put('/edit' , 'PostsController@edit2');
