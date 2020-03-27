@@ -15,8 +15,8 @@ class CreatePostsTable extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->increments("id");
-            $table->float("longitude");
-            $table->float("latitude");
+            $table->double("longitude");
+            $table->double("latitude");
             $table->string("type");
             $table->longText("urlToImage");
             $table->string("time");
