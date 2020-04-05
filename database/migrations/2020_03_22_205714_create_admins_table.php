@@ -15,13 +15,17 @@ class CreateAdminsTable extends Migration
     {
         Schema::create('admins', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->string('name');
             $table->integer('phone');
             $table->integer('cin');
             $table->string('email');
             $table->string('password');
-            $table->rememberToken();
+            $table->unsignedInteger('delegation_id');
+            //$table->rememberToken();
+        });
+
+        Schema::table('admins', function($table) {
+            $table->foreign("delegation_id")->references("id")->on("delegations")->onDelete('cascade');
         });
     }
 

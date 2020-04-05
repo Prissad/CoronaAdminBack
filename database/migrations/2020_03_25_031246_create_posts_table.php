@@ -22,8 +22,9 @@ class CreatePostsTable extends Migration
             $table->string("time");
             $table->boolean("affichage")->default(true);
             $table->string("description")->nullable();
-            $table->timestamp("created_at")->nullable();
-            $table->timestamp("updated_at")->nullable();
+            $table->integer("delegation_id");
+
+            $table->foreign("delegation_id")->references("id")->on("delegations")->onDelete('cascade');
         });
     }
 
