@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Delegation extends Model
 {
+    protected $table = 'delegations';
     public function admins()
     {
         return $this->hasMany('App\Admin');

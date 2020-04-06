@@ -14,9 +14,10 @@ class CreateDelegationsTable extends Migration
     public function up()
     {
         Schema::create('delegations', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments("id");
             $table->string("name");
-            $table->integer("gouvernorat_id");
+            $table->integer("gouvernorat_id")->unsigned();
 
             $table->foreign("gouvernorat_id")->references("id")->on("gouvernorats")->onDelete('cascade');
         });

@@ -14,6 +14,7 @@ class CreatePostsTable extends Migration
     public function up()
     {
         Schema::create('posts', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments("id");
             $table->double("longitude");
             $table->double("latitude");
@@ -22,7 +23,7 @@ class CreatePostsTable extends Migration
             $table->string("time");
             $table->boolean("affichage")->default(true);
             $table->string("description")->nullable();
-            $table->integer("delegation_id");
+            $table->integer("delegation_id")->unsigned();
 
             $table->foreign("delegation_id")->references("id")->on("delegations")->onDelete('cascade');
         });

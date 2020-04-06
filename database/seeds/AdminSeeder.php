@@ -19,7 +19,7 @@ class AdminSeeder extends Seeder
             'cin' => "98765432",
             'email' => "admin@admin.com",
             'password' => Hash::make("admin"),
-            'delegation_id' => 0,
+            'delegation_id' => null,
         ]);
     }
 }
