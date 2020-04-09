@@ -27,7 +27,8 @@ Route::put('/edit' , 'PostsController@editShow');
 Route::get('/search','PostsController@searchall');
 Route::get('/searchdeleg','PostsController@searchdeleg');
 
-
 Route::post('/signup', 'AdminController@register');
 Route::post('/login', 'AdminController@login');
 Route::post('/logout', 'AdminController@logout');
+
+Route::post('/deleg', 'DelegationController@addDeleg');
