@@ -21,9 +21,11 @@ Route::post('login', 'AdminController@login');
 Route::get('/hello','PostsController@index');
 Route::post('/rep','PostsController@store');
 
-Route::get('/posts', 'PostsController@show2');
-Route::put('/edit' , 'PostsController@edit2');
-Route::get('/search','PostsController@search');
+Route::get('/posts', 'PostsController@showall');
+Route::post('/postdeleg', 'PostsController@showdeleg');
+Route::put('/edit' , 'PostsController@editShow');
+Route::get('/search','PostsController@searchall');
+Route::get('/searchdeleg','PostsController@searchdeleg');
 
 
 Route::post('/signup', 'AdminController@register');

@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Hash;
+//use Hash;
+use Illuminate\Support\Facades\Hash;
+use function MongoDB\BSON\toJSON;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -15,72 +18,36 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AdminController extends Controller
 {
- /*   public function signUp(Request $request){
-        $email=$request['email'];
-        $password=$request['password'];
-        $password=Hash::make($password);
-        $name=$request['name'];
-        $phone=$request['phone'];
-        $cin=$request['cin'];
-
-        $admin=new Admin();
-        $admin->email=$email;
-        $admin->name=$name;
-        $admin->password=$password;
-        $admin->phone=$phone;
-        $admin->cin=$cin;
-
-        $admin->save();
-
-        //return redirect()->back();
-        return "ajouté";
-
-    }
-
-    public function login(Request $request){
-        $email=$request['email'];
-        $password=$request['password'];
-
-        $admin = Admin::where('email', $email)->first();
-        if(($admin != null)&&(Hash::check($password,$admin->password))){
-            return response()->json(['success' => $admin->name]);
-        }
-        else{
-            return response()->json(['error'=>'Unauthorised'], 401);
-        }
-
-        $input = $request->only('email', 'password');
-        $jwt_token = null;
-        if (!$jwt_token = JWTAuth::attempt($input)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid Email or Password',
-            ], 401);
-        }
-        // get the user
-        $user = Auth::user();
-
-        return response()->json([
-            'success' => true,
-            'token' => $jwt_token,
-            'user' => $user
-        ]);
-
-    }*/
 
     public function register(Request $request)
     {
+        $gouv=$request->gouv;
+        $deleg=$request->deleg;
+
+        $id = DB::table('delegations')
+            ->join('gouvernorats', 'delegations.gouvernorat_id', 'gouvernorats.id')
+            ->where([
+                ['gouvernorats.name', '=', $gouv],
+                ['delegations.name', '=', $deleg]
+            ])
+            ->select('delegations.id')
+            ->get();
+
+
         $admin = Admin::create([
             'email'    => $request->email,
             'name' => $request->name,
             'phone' => $request->phone,
             'cin' => $request->cin,
             'password' => $request->password,
+            'delegation_id' => $id->first()->id,
         ]);
 
         $token = auth()->login($admin);
 
         return $this->respondWithToken($token);
+        //return $id->first()->id;
+        //return response()->json($id);
     }
 
     public function login()
@@ -91,7 +58,27 @@ class AdminController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return $this->respondWithToken($token);
+        $email=request('email');
+        $psswd=request('password');
+
+        $admins = DB::table('admins')
+            ->where([
+                ['admins.email', '=', $email],
+                //Hash::check($psswd,'admins.password')
+            ])
+            ->select('admins.*')
+            ->get();
+
+        foreach ($admins as $admin){
+            if(Hash::check($psswd,$admin->password)){
+                $deleg_id=$admin;
+                break;
+            }
+        }
+
+        //return $this->respondWithToken($token);
+        return $this->respond($token,$deleg_id->delegation_id,$deleg_id->name);
+
     }
 
     public function logout(Request $request)
@@ -134,6 +121,17 @@ class AdminController extends Controller
             'access_token' => $token,
             'token_type'   => 'bearer',
             'expires_in'   => auth()->factory()->getTTL() * 60
+        ]);
+    }
+
+    protected function respond($token,$deleg,$name)
+    {
+        return response()->json([
+            'access_token' => $token,
+            'token_type'   => 'bearer',
+            'expires_in'   => auth()->factory()->getTTL() * 60,
+            'deleg_id'     => $deleg,
+            'name'         => $name
         ]);
     }
 

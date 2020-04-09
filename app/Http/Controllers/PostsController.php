@@ -20,11 +20,6 @@ class PostsController extends Controller
 
     public function index()
     {
-//        $reports = Reporting::all();
-//        $data= array('reports' => $reports);
-//        foreach ($reports as $key => $val) {
-//            echo "$key => $val <br>";
-//        }
         return response()->json($this->repository->index());
     }
 
@@ -47,25 +42,6 @@ class PostsController extends Controller
 
     public function store(Request $request)
     {
-//        $request->validate([
-//            'longitude'=>'required',
-//            'latitude'=>'required',
-//            'type'=>'required',
-//            'urlToImage'=>'required',
-//            'time'=>'required',
-//        ]);
-
-//            $post_data = $request->all();
-//            $report = new Reporting();
-//             $report->longitude = $post_data['longitude'];
-// $report->latitude = $post_data['latitude'];
-// $report->type = $post_data['type'];
-// $report->urlToImage = $post_data['urlToImage'];
-// $report->time = $post_data['time'];
-// $report->save();
-
-//            $post_data = $request->all();
-//$report = Reporting::create($post_data);
         $post_data = $request->all();
         // echo "avant modification = " . $post_data["urlToImage"];
         $toStore = base64_decode( $post_data["urlToImage"]);
@@ -76,17 +52,6 @@ class PostsController extends Controller
         $report = Post::create($post_data);
 
         $report->save();
-
-
-//       [
-//            'longitude' => $request->get('longitude'),
-//            'latitude' => $request->get('latitude'),
-//            'type' => $request->get('type'),
-//            'urlToImage' => $request->get('urlToImage'),
-//            'time' => $request->get('time'),
-//        ]);
-//        $report->save();
-//        return redirect('/result')->with('success', 'report saved!');
     }
 
 
@@ -135,17 +100,25 @@ class PostsController extends Controller
         //
     }
 
-    public function show2()
+    public function showall()
     {
-
-        // $posts = Post::all();
         $posts=DB::table("posts")->where('type' , 'like' , '%'.'%')->paginate(10);
         $data = array('posts' => $posts);
-        //return view('posts', $data);
         return response()->json($data);
     }
 
-    public function edit2(Request $request) {
+    public function showdeleg(Request $request)
+    {
+        $deleg_id=$request->id;
+        $posts=DB::table("posts")->where([
+            ['type' , 'like' , '%'.'%'],
+            ['delegation_id', '=', $deleg_id]
+        ])->paginate(10);
+        $data = array('posts' => $posts);
+        return response()->json($data);
+    }
+
+    public function editShow(Request $request) {
         $id = $request['id'];
         $etat= $request['affichage'];
         if($etat=='true') {$affichage = 0;}
@@ -153,7 +126,7 @@ class PostsController extends Controller
         DB::update('update posts set affichage = ? where id = ?',[$affichage,$id]);
     }
 
-    public function search(Request $request)
+    public function searchall(Request $request)
     {
         $search = $request['search'];
         $posts=DB::table("posts")->where([
@@ -161,6 +134,20 @@ class PostsController extends Controller
             ['affichage','=','1'],
             ]
         )->paginate(10);
+        //return view('index',['posts' => $posts]) ;
+        $data = array('posts' => $posts);
+        return response()->json($data);
+    }
+
+    public function searchdeleg(Request $request)
+    {
+        $search = $request['search'];
+        $deleg_id=$request->id;
+        $posts=DB::table("posts")->where([
+            ['description' , 'like' , '%'.$search.'%'],
+            ['affichage','=','1'],
+            ['delegation_id', '=', $deleg_id]
+        ])->paginate(10);
         //return view('index',['posts' => $posts]) ;
         $data = array('posts' => $posts);
         return response()->json($data);
