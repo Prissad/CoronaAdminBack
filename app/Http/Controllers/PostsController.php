@@ -42,6 +42,18 @@ class PostsController extends Controller
 
     public function store(Request $request)
     {
+        $gouv=$request->gouvernorat;
+        $deleg=$request->delegation;
+
+        $id = DB::table('delegations')
+            ->join('gouvernorats', 'delegations.gouvernorat_id', 'gouvernorats.id')
+            ->where([
+                ['gouvernorats.name', '=', $gouv],
+                ['delegations.name', '=', $deleg]
+            ])
+            ->select('delegations.id')
+            ->get();
+
         $post_data = $request->all();
         // echo "avant modification = " . $post_data["urlToImage"];
         $toStore = base64_decode( $post_data["urlToImage"]);
@@ -49,7 +61,15 @@ class PostsController extends Controller
         // echo "aprés modification = " . $post_data["urlToImage"];
         file_put_contents("images/$name.jpg",$toStore);
         $post_data["urlToImage"] = "images/$name.jpg" ;
-        $report = Post::create($post_data);
+        $report = Post::create([
+            'longitude' => $request->longitude,
+            'latitude' => $request->latitude,
+            'type' => $request->type,
+            'urlToImage' => $post_data["urlToImage"],
+            'time' => $request->time,
+            'description' => $request->description,
+            'delegation_id' => $id->first()->id,
+    ]);
 
         $report->save();
     }
