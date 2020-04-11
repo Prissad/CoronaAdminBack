@@ -22,7 +22,7 @@ Route::get('/hello','PostsController@index');
 Route::post('/rep','PostsController@store');
 
 Route::get('/posts', 'PostsController@showall');
-Route::post('/postdeleg', 'PostsController@showdeleg');
+Route::get('/postdeleg', 'PostsController@showdeleg');
 Route::put('/edit' , 'PostsController@editShow');
 Route::get('/search','PostsController@searchall');
 Route::get('/searchdeleg','PostsController@searchdeleg');
@@ -32,3 +32,4 @@ Route::post('/login', 'AdminController@login');
 Route::post('/logout', 'AdminController@logout');
 
 Route::post('/deleg', 'DelegationController@addDeleg');
+Route::get('/getdeleg', 'DelegationController@getDelegations');

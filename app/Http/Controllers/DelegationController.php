@@ -24,4 +24,18 @@ class DelegationController extends Controller
             'gouvernorat_id' => $gouv_id
         ]);
     }
+
+    public function getDelegations(Request $request){
+        $gouv=$request->gouv;
+
+        $delegations = DB::table('delegations')
+            ->join('gouvernorats', 'delegations.gouvernorat_id', 'gouvernorats.id')
+            ->where([
+                ['gouvernorats.name', '=', $gouv],
+            ])
+            ->select('delegations.name')
+            ->get();
+
+        return response()->json($delegations);
+    }
 }
